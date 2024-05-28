@@ -1,6 +1,10 @@
 import express from "express";
-import ffmpeg from 'fluent-ffmpeg'; // ffmpeg is a wrapper around the CLI tool ( a command line tool), so the computer needs the CLI tool installed => it need to install on Umbuntu => use / + enter in command line to do this
+//import ffmpeg from 'fluent-ffmpeg'; // ffmpeg is a wrapper around the CLI tool ( a command line tool), so the computer needs the CLI tool installed => it need to install on Umbuntu => use / + enter in command line to do this
 
+
+const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
+const ffmpeg = require('fluent-ffmpeg');
+ffmpeg.setFfmpegPath(ffmpegPath);
 const app = express();
 app.get("/", (req, res) => {
     res.send("Hello World!");
@@ -49,7 +53,7 @@ app.post('/process-video', (req, res) => {
 
 const port = process.env.PORT || 3000; // standard way to provide the port at runtime => esentially, we are running on PORT  or 3000 if env port not available we run on port 3000 locally
 app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
+    console.log(`ServeR is running on port ${port}`);
 });
 
 
