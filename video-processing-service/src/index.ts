@@ -1,63 +1,67 @@
-import express from "express";
-//import ffmpeg from 'fluent-ffmpeg'; // ffmpeg is a wrapper around the CLI tool ( a command line tool), so the computer needs the CLI tool installed => it need to install on Umbuntu => use / + enter in command line to do this
+import express from 'express';
 
+import { 
+  uploadProcessedVideo,
+  downloadRawVideo,
+  deleteRawVideo,
+  deleteProcessedVideo,
+  convertVideo,
+  setupDirectories
+} from './storage';
 
-const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
-const ffmpeg = require('fluent-ffmpeg');
-ffmpeg.setFfmpegPath(ffmpegPath);
+// Create the local directories for videos
+setupDirectories();
+
 const app = express();
-app.get("/", (req, res) => {
-    res.send("Hello World!");
-});
-
-// Similar to makign a FLASK or FAST api, we just made an express API in typescript
-// above is a GET endpoint we have created => when a get request made at "/" we execute the function => res.send
-
-//app.listen(port, () => {
-//    console.log(`Video processing service listening at http://localhost:${port}`);
-//})
-
-
-// above is Starting our Server which is on our port (in FAST the server is started in the terminal via a link)
-
 app.use(express.json());
 
-app.post('/process-video', (req, res) => {
-
-  // Get the path of the input video file from the request body
-  // POST request has a body
-  const inputFilePath = req.body.inputFilePath;
-  const outputFilePath = req.body.outputFilePath;
-
-  // Check if the input file path is defined
-  if (!inputFilePath || !outputFilePath) {
-    return res.status(400).send('Bad Request: Missing file path');
-    // || = or
+// Process a video file from Cloud Storage into 360p
+app.post('/process-video', async (req, res) => {
+    // async function => allows blocking w/ await
+  // Get the bucket and filename from the Cloud Pub/Sub message - can look at the pub/sub documnetation
+  let data;
+  try {
+    const message = Buffer.from(req.body.message.data, 'base64').toString('utf8');
+    data = JSON.parse(message);
+    if (!data.name) {
+      throw new Error('Invalid message payload received.');
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(400).send('Bad Request: missing filename.');
   }
 
-  // Create the ffmpeg command
-  ffmpeg(inputFilePath)
-    .outputOptions('-vf', 'scale=-1:360') // scale the vf (video file) to 360p
-    // .on => runs ON an event occuring
-    .on('end', function() {
-        console.log('Processing finished successfully');
-        res.status(200).send('Processing finished successfully'); // no need for returns 
-    })
-    // if error then do this
-    .on('error', function(err: any) {
-        console.log('An error occurreD: ' + err.message);
-        res.status(500).send('An error occurreD: ' + err.message);
-    })
-    .save(outputFilePath); // save output file pathh
+  const inputFileName = data.name;
+  const outputFileName = `processed-${inputFileName}`;
+
+  // Download the raw video from Cloud Storage
+  await downloadRawVideo(inputFileName); // we want this to be blocking
+
+  // Process the video into 360p
+  try { 
+    await convertVideo(inputFileName, outputFileName)
+  } catch (err) {
+    await Promise.all([
+      deleteRawVideo(inputFileName),
+      deleteProcessedVideo(outputFileName)
+    ]); // await in parallel
+    return res.status(500).send('Processing failed');
+  }
+  
+
+  
+  // Upload the processed video to Cloud Storage
+  await uploadProcessedVideo(outputFileName);
+// we also want to delete processed videos to save space
+  await Promise.all([
+    deleteRawVideo(inputFileName),
+    deleteProcessedVideo(outputFileName)
+  ]); // accepts an array of promises, so we can await them in parallel
+
+  return res.status(200).send('Processing finished successfully');
 });
 
-const port = process.env.PORT || 3000; // standard way to provide the port at runtime => esentially, we are running on PORT  or 3000 if env port not available we run on port 3000 locally
+const port = process.env.PORT || 3000;
 app.listen(port, () => {
-    console.log(`ServeR is running on port ${port}`);
+    console.log(`Server is running on port ${port}`);
 });
-
-
-// use this on the command prompt: pushd \\wsl.localhost\Ubuntu\home\jea68\Youtube-Clone\video-processing-service
-
-
-// Lightweight Rest API Client for VS Code => could used POSTMAN could use Request module
