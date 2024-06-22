@@ -1,0 +1,16 @@
+{
+  "name": "youtube-clone",
+  "version": "1.0.0",
+  "description": "Built a clone of youtube. I can upload and play videos with this",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "18": "^0.0.0",
+    "@google-cloud/storage": "^7.11.2"
+  }
+}
