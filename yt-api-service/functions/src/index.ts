@@ -33,3 +33,31 @@ export const createUser = functions.auth.user().onCreate((user) => {
   return;
 });
 
+
+export const generateUploadUrl = onCall({maxInstances: 1}, async (request) => {
+  // Check if the user is authentication => check the request.auth field
+  if (!request.auth) {
+    throw new functions.https.HttpsError(
+      "failed-precondition",
+      "The function must be called while authenticated."
+    );
+  }
+  // extracting the following from the Request
+  const auth = request.auth;
+  const data = request.data;
+  const bucket = storage.bucket(rawVideoBucketName);
+
+  // Generate a unique filename for upload =>
+  //  make it unique by getting id + time (to the second) +
+  //  the file extension e.g mp4
+  const fileName = `${auth.uid}-${Date.now()}.${data.fileExtension}`;
+
+  // Get a v4 signed URL for uploading file
+  const [url] = await bucket.file(fileName).getSignedUrl({
+    version: "v4",
+    action: "write",
+    expires: Date.now() + 15 * 60 * 1000, // url only valid for 15 minutes
+  });
+
+  return {url, fileName};
+});
