@@ -1,8 +1,10 @@
-import { getFunctions, httpsCallable } from 'firebase/functions';
-
-const functions = getFunctions(); //to invoke functions, we need an instance of it
+import { httpsCallable } from 'firebase/functions';
+import { functions } from './firebase';
+ //to invoke functions, we need an instance of it
 // we know which project in firebase from the firebase file 
 const generateUploadUrlFunction = httpsCallable(functions, 'generateUploadUrl'); // name of the function
+
+const getVideosFunction = httpsCallable(functions, 'getVideos');
 
 export async function uploadVideo(file: File) {
   const response: any = await generateUploadUrlFunction({
@@ -21,4 +23,21 @@ export async function uploadVideo(file: File) {
   });
 
   return uploadResult;
+}
+
+export interface Video {
+  id?: string,
+  uid?: string,
+  filename?: string,
+  status?: 'processing' | 'processed',
+  title?: string,
+  description?: string  
+}
+
+// If we want to call getVideos from a React server component,
+//  we have to make sure the initializeApp(firebaseConfig) is run before.
+
+export async function getVideos() {
+  const response: any = await getVideosFunction();
+  return response.data as Video[];
 }
