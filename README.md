@@ -4,8 +4,7 @@ Built a skeleton of the Youtube web app where you can List videos, Watch a video
 ## Architecture
 The app has the following architecture:
 
-![Arcitecture](assets/yt-clone-architecture.png )
-<img src="assets/yt-clone-architecture.png" width="100" height="100">
+<img src="assets/yt-clone-architecture.png" width="600" height="400">
 
 This project was inspired by neetcode.io and has a similar tech stack and architecture
 ## General Idea
