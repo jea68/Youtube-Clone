@@ -4,7 +4,7 @@ Built a skeleton of the Youtube web app where you can List videos, Watch a video
 ## Architecture
 The app has the following architecture:
 
-![Arcitecture](yt-clone-architecture.png)
+![Arcitecture](assets/yt-clone-architecture.png)
 
 
 
