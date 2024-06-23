@@ -4,9 +4,8 @@ Built a skeleton of the Youtube web app where you can List videos, Watch a video
 ## Architecture
 The app has the following architecture:
 
-<img src="assets/yt-clone-architecture.png" width="600" height="400">
+<img src="assets/yt-clone-architecture.png" width="650" height="400">
 
-*nb. This project was inspired by neetcode.io and has a similar tech stack and architecture*
 ## General Idea
 - Cloud Storage stores the raw and processed videos uploaded by users.
 - Pub/Sub acts as a message queue and sends messages to the video processing service.
@@ -15,3 +14,5 @@ The app has the following architecture:
 - Cloud Run also hosts a Next.js app, which serves as the YouTube web client.
 - The Next.js app makes API calls to Firebase Functions.
 - Firebase Functions fetches videos from Cloud Firestore and returns them to show on the app.
+
+*nb. This project was inspired by neetcode.io and has a similar tech stack and architecture*
