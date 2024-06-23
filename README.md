@@ -6,7 +6,7 @@ The app has the following architecture:
 
 <img src="assets/yt-clone-architecture.png" width="600" height="400">
 
-This project was inspired by neetcode.io and has a similar tech stack and architecture
+*nb. This project was inspired by neetcode.io and has a similar tech stack and architecture*
 ## General Idea
 - Cloud Storage stores the raw and processed videos uploaded by users.
 - Pub/Sub acts as a message queue and sends messages to the video processing service.
