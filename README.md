@@ -1,7 +1,7 @@
 # YouTube-Clone Project
-Built a skeleton of the YouTube web app where you can List videos, Watch a video, Sign in/out, Upload a video and Watch the transcoded video. I initiated the project to enhance my full-stack development skills by integrating backend knowledge with frontend technologies.
+Built a skeleton of the YouTube web app where you can List videos, Watch a video, Sign in/out, Upload a video and Watch the transcoded video. I initiated the project to enhance my full-stack development skills.
+**Technologies Used:** Node.js, TypeScript, Next.js, HTML, CSS, Firebase, Google Cloud Platform (GCP), FFMPEG.
 
-Technologies: Node.js, TypeScript, Next.js, HTML, CSS, Firebase, Google Cloud Platform (GCP), FFMPEG.
 ## Architecture
 <img src="assets/yt-clone-architecture.png" width="650" height="400">
 
