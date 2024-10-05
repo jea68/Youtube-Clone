@@ -4,7 +4,8 @@ Built a skeleton of the YouTube web app where you can List videos, Watch a video
 **Technologies Used:** Node.js, TypeScript, Next.js, HTML, CSS, Firebase, Google Cloud Platform (GCP), FFMPEG.
 
 **Link:** https://yt-web-client-immn7fa7pa-uc.a.run.app/
-(site is down as my google cloud wallet is used up :( ) 
+
+*( site is down as my google cloud wallet is used up :( )*
 
 ## Architecture
 <img src="assets/yt-clone-architecture.png" width="650" height="400">
@@ -29,4 +30,5 @@ Built a skeleton of the YouTube web app where you can List videos, Watch a video
 
 ## Limitations
 It's a basic level of video streaming provided by Google Cloud Storage; it's not optimized like YouTube. Also, there is no implementation of a Content Delivery Network (CDN) for faster services.
+
 *nb. This project was inspired by neetcode.io and has a similar tech stack and architecture*
