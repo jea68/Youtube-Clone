@@ -5,7 +5,7 @@ Built a skeleton of the YouTube web app where you can List videos, Watch a video
 
 **Link:** https://yt-web-client-immn7fa7pa-uc.a.run.app/
 
-* site is down as my google cloud wallet is used up :( *
+*site is down as my google cloud wallet is used up :(*
 
 ## Architecture
 <img src="assets/yt-clone-architecture.png" width="650" height="400">
