@@ -1,0 +1,21 @@
+How to switch directory => pushd \\wsl.localhost\Ubuntu\home\jea68\Youtube-Clone\yt-web-client
+
+
+First Fix:
+rmdir /s /q node_modules
+del package-lock.json
+npm install
+
+
+
+
+rmdir /s /q node_modules
+
+
+run server?:
+jea68@DESKTOP-D2Q05IL:~/Youtube-Clone/yt-web-client$ npm run dev
+
+
+run firebase:
+jea68@DESKTOP-D2Q05IL:~/Youtube-Clone$ cd /home/jea68/Youtube-Clone/yt-api-service/functions
+jea68@DESKTOP-D2Q05IL:~/Youtube-Clone/yt-api-service/functions$ firebase emulators:start

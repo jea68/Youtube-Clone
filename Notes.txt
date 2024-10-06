@@ -1,0 +1,113 @@
+
+1. Downloads
+2. Set up a typescript express app 
+3. Code to process videos => Take them from original to 360p
+
+
+
+4. Containerizing => Docker takes the code working on this machine and lets it work on others
+
+it can be difficult to deploy apps and ensure they have all the dependencies they need. For example, we need to install Node.js as well as ffmpeg on our machine to run our Video Processing Service.
+But what if we want to deploy our app to a server that doesn't have ffmpeg installed?
+
+This is where containers come in. Containers allow us to package our app and all its dependencies into a single image. We can then run this image on any machine that has Docker installed.
+
+For now, we will do so locally. But later on we will deploy our image to Google Cloud Run, which is specifically designed for running containerized apps.
+
+
+The Dockerfile defines what goes on in the environment inside your container.
+
+We use the base Node 18 image, which is Debian-based. Docker images are recursive, so we are building our own Docker image using other images, which allows for reusability.
+
+The reason we copy the package.json and package-lock.json before copying the rest of the code is due to Docker's layer caching mechanism. Docker builds images in layers and each step in your Dockerfile creates a new layer. Docker can reuse layers from previous builds for new builds, which speeds up the build process.
+
+If we copied our code before running npm install, every code change would invalidate Docker's cache for the npm install step, and Docker would have to reinstall our node modules on every build. By copying just the package.json and package-lock.json first, Docker can use the cached node modules as long as those files haven't changed.
+
+### 3. (optional) Build a production Dockerfile
+The reason this step is optional, is because if you are new to Docker, this may not be easy to understand. But for completeness, I will include it here.
+
+As you become more familiar with Docker, you may come back and revisit this section.
+
+# Stage 1: Build stage
+FROM node:18 AS builder
+
+# Set the working directory in the container to /app
+WORKDIR /app
+
+# Copy package.json and package-lock.json into the working directory
+COPY package*.json ./
+
+# Install any needed packages specified in package.json
+RUN npm install
+
+# Bundle app source inside the docker image
+COPY . .
+
+# Build the app
+RUN npm run build
+
+# Stage 2: Production stage
+FROM node:18
+
+# Install ffmpeg in the container
+RUN apt-get update && apt-get install -y ffmpeg
+
+# Set the working directory
+WORKDIR /app
+
+# Copy package.json and package-lock.json
+COPY package*.json ./
+
+# Install only production dependencies
+RUN npm install --only=production
+
+# Copy built app from the builder stage
+COPY --from=builder /app/dist ./dist
+
+# Make port 3000 available to the world outside this container
+EXPOSE 3000
+
+# Define the command to run your app using CMD which defines your runtime
+CMD [ "npm", "run", "serve" ]
+
+
+
+#### The main difference between this Dockerfile and the previous one is that we are using a multi-stage build to reduce the size of the image.
+
+The first stage, builder, is used to build the app. The second stage, production, is used to run the app.
+
+Notice how we are using npm run serve instead of npm start. This will serve the compiled files from out /dist directory.
+
+The reason the size is smaller, is because in this image we are not including any of the source files, only the compiled files.
+
+Yes, Stage 1 uses the source files to build the app, but those files are not included in the final image. Because in Stage 2, we are copying the compiled files from Stage 1, but not the source files.
+
+The final stage is the one that is used to run the app.
+
+It's also worth mentioning that's it's generally preferable to specify a Node version, e.g. FROM NODE:18.17. Because by default with FROM NODE:18 Docker will use the latest version of Node. So it could be possible, though unlikely, that a new Node subversion breaks our app.
+
+RUN on docker instead of locally:
+jea68@DESKTOP-D2Q05IL:~/Youtube-Clone/video-processing-service$ docker ps
+CONTAINER ID   IMAGE                      COMMAND                  CREATED              STATUS              PORTS                    NAMES
+f0b64e0544ed   video-processing-service   "docker-entrypoint.s…"   About a minute ago   Up About a minute   0.0.0.0:3000->3000/tcp   sweet_euler
+jea68@DESKTOP-D2Q05IL:~/Youtube-Clone/video-processing-service$ docker cp /home/jea68/Youtube-Clone/video-processing-service/beach.mp4 sweet_euler:/app/beach.mp4
+Successfully copied 807kB to sweet_euler:/app/beach.mp4
+jea68@DESKTOP-D2Q05IL:~/Youtube-Clone/video-processing-service$ docker cp sweet_euler:/app/processed-beach.mp4 ./
+Successfully copied 268kB to /home/jea68/Youtube-Clone/video-processing-service/./
+jea68@DESKTOP-D2Q05IL:~/Youtube-Clone/video-processing-service$ 
+
+
+
+
+5. Convert Videos Hosted on Google Cloud Storage => Rather than process videos locally to locally, we will now download from google cload 
+
+The general flow of the service will be:
+
+A user uploads a video to Google Cloud Storage
+The video processing service will be notified of the upload via Cloud Pub/Sub
+The video processing service will download the video from Google Cloud Storage
+The video processing service will process the video
+The video processing service will upload the processed video to Google Cloud Storage
+
+
+How to switch to the directory in command prompt
