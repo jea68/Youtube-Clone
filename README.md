@@ -31,4 +31,4 @@ Built a skeleton of the YouTube web app where you can List videos, Watch a video
 ## Limitations
 It's a basic level of video streaming provided by Google Cloud Storage; it's not optimized like YouTube. Also, there is no implementation of a Content Delivery Network (CDN) for faster services.
 
-*nb. This project was inspired by neetcode.io and has a similar tech stack and architecture*
+*nb. I was inspired by neetcode.io for this project*
